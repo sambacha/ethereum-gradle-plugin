@@ -1,0 +1,13 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2020 41North.
+//   http://www.apache.org/licenses/LICENSE-2.0
+// 
+// NOTE Left as Gradle (Groovy) to avoid issues when converting to Kotlin and importing the source.
+
+dependencyManagement {
+    dependencies {
+        dependency 'org.web3j:core:4.5.17'
+        dependency 'org.web3j:abi:4.5.17'
+        dependency 'org.web3j:utils:4.5.17'
+    }
+}

@@ -1,90 +1,60 @@
-# kotlin-gradle-plugin-template 🐘
+# Python Gradle Plugin
+This Gradle Plugin uses [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+to run executables (`python`, `pip`, `conda` etc.) from virtual env.  
 
-[![Use this template](https://img.shields.io/badge/-Use%20this%20template-brightgreen)](https://github.com/cortinico/kotlin-gradle-plugin-template/generate) [![Pre Merge Checks](https://github.com/cortinico/kotlin-gradle-plugin-template/workflows/Pre%20Merge%20Checks/badge.svg)](https://github.com/cortinico/kotlin-gradle-plugin-template/actions?query=workflow%3A%22Pre+Merge+Checks%22)  [![License](https://img.shields.io/github/license/cortinico/kotlin-android-template.svg)](LICENSE) ![Language](https://img.shields.io/github/languages/top/cortinico/kotlin-android-template?color=blue&logo=kotlin)
+## Requirements
+* Java JDK or JRE version 8 or higher
 
-A simple Github template that lets you create a **Gradle Plugin** 🐘 project using **100% Kotlin** and be up and running in a **few seconds**. 
+## Purpose
+Running python scripts or projects by executing single tasks which will download and install Python virtual environment.
 
-This template is focused on delivering a project with **static analysis** and **continuous integration** already in place.
+## Usage
 
-## How to use 👣
+### Steps to run python script from Gradle
+1. Apply a plugin to a project as described on [gradle portal](https://plugins.gradle.org/plugin/com.pswidersk.python-plugin).
+2. Configure a plugin by specifying desired python version in build script:
+    ```kotlin
+    pythonPlugin {
+        pythonVersion.set("3.8.2")
+    }
+    ```
+    Possible properties in plugin extension are:
+    - `pythonVersion` -> Python environment version, default `3.8.5`
+    - `minicondaVersion` -> Miniconda3 version, default `latest`
+3. Define a task to run desired python script, for example to run `quicksort.py` script in `main` dir add the following task configuration to build script:
+    ```kotlin
+    tasks {
+        register<VenvTask>("runQuickSort") {
+                workingDir = projectDir.resolve("main")
+                args = listOf("quicksort.py")
+        }
+    }
+    ```
+4. Run python script from gradle:
+    ```shell script
+    # Linux
+    ./gradlew runQuickSort
+    # Windows
+    gradlew.bat runQuickSort
+    ```
 
-Just click on [![Use this template](https://img.shields.io/badge/-Use%20this%20template-brightgreen)](https://github.com/cortinico/kotlin-gradle-plugin-template/generate) button to create a new repo starting from this template.
+### Additional examples alongside with sample PipTasks configurations can be found in `examples` module in this project. 
 
-Once created don't forget to update the:
-- [Plugin Coordinates](plugin-build/buildSrc/src/main/java/Coordinates.kt)
-- Plugin Usages (search for [com.ncorti.kotlin.gradle.template](https://github.com/cortinico/kotlin-gradle-plugin-template/search?q=com.ncorti.kotlin.gradle.template&unscoped_q=com.ncorti.kotlin.gradle.template) in the repo and replace it with your ID).
+## Intellij setup
+* To have autocomplete and modules properly recognized in Intellij Idea simply point python executable as described in: 
+https://www.jetbrains.com/help/idea/configuring-python-sdk.html
+* To have properly recognized imported source modules in tests, right click on sources directory (for example `main`) -> `Mark Direcotry as` -> `as Sources root`.
 
-## Features 🎨
+### Python exec locations (`*` is a configured python version)
 
-- **100% Kotlin-only template**.
-- Plugin build setup with **composite build**.
-- 100% Gradle Kotlin DSL setup.
-- Dependency versions managed via `buildSrc`.
-- CI Setup with GitHub Actions.
-- Kotlin Static Analysis via `ktlint` and `detekt`.
-- Publishing-ready to Gradle Portal.
-- Issues Template (bug report + feature request)
-- Pull Request Template.
+#### Linux - `.gradle/python/pythonVenvs/virtualenv-*/bin/python`
 
-## Composite Build 📦
+#### Windows - `.gradle/python/pythonVenvs/virtualenv-*/Scripts/python.exe`
 
-This template is using a [Gradle composite build](https://docs.gradle.org/current/userguide/composite_builds.html) to build, test and publish the plugin. This means that you don't need to run Gradle twice to test the changes on your Gradle plugin (no more `publishToMavenLocal` tricks or so).
- 
-The included build is inside the [plugin-build](plugin-build) folder. 
-
-### `preMerge` task
-
-A `preMerge` task on the top level build is already provided in the template. This allows you to run all the `check` tasks both in the top level and in the included build.
-
-You can easily invoke it with:
-
-```
-./gradlew preMerge
-```
-
-If you need to invoke a task inside the included build with:
-
-```
-./gradlew -p plugin-build <task-name>
-```
-
-
-### Dependency substitution
-
-Please note that the project relies on module name/group in order for [dependency substitution](https://docs.gradle.org/current/userguide/resolution_rules.html#sec:dependency_substitution_rules) to work properly. If you change only the plugin ID everything will work as expected. If you change module name/group, things might break and you probably have to specify a [substitution rule](https://docs.gradle.org/current/userguide/resolution_rules.html#sub:project_to_module_substitution).
-
-
-## Publishing 🚀
-
-This template is ready to let you publish to [Gradle Portal](https://plugins.gradle.org/).
-
-The [![Publish Plugin to Portal](https://github.com/cortinico/kotlin-gradle-plugin-template/workflows/Publish%20Plugin%20to%20Portal/badge.svg?branch=1.0.0)](https://github.com/cortinico/kotlin-gradle-plugin-template/actions?query=workflow%3A%22Publish+Plugin+to+Portal%22) Github Action will take care of the publishing whenever you **push a tag**.
-
-Please note that you need to configure two secrets: `GRADLE_PUBLISH_KEY` and `GRADLE_PUBLISH_SECRET` with the credetials you can get from your profile on the Gradle Portal.
-
-## 100% Kotlin 🅺
-
-This template is designed to use Kotlin everywhere. The build files are written using [**Gradle Kotlin DSL**](https://docs.gradle.org/current/userguide/kotlin_dsl.html) as well as the [Plugin DSL](https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block) to setup the build.
-
-Dependencies are centralized inside the [Dependencies.kt](buildSrc/src/main/java/Dependencies.kt) file in the `buildSrc` folder. Please note that there is another [Dependencies.kt](plugin-build/buildSrc/src/main/java/Dependencies.kt) inside the included build to keep the versions isolated.
-
-Moreover, a minimalistic Gradle Plugin is already provided in Kotlin to let you easily start developing your own around it.
-
-## Static Analysis 🔍
-
-This template is using [**ktlint**](https://github.com/pinterest/ktlint) with the [ktlint-gradle](https://github.com/jlleitschuh/ktlint-gradle) plugin to format your code. To reformat all the source code as well as the buildscript you can run the `ktlintFormat` gradle task.
-
-This template is also using [**detekt**](https://github.com/arturbosch/detekt) to analyze the source code, with the configuration that is stored in the [detekt.yml](config/detekt/detekt.yml) file (the file has been generated with the `detektGenerateConfig` task).
-
-## CI ⚙️
-
-This template is using [**GitHub Actions**](https://github.com/cortinico/kotlin-android-template/actions) as CI. You don't need to setup any external service and you should have a running CI once you start using this template.
-
-There are currently the following workflows available:
-- [Validate Gradle Wrapper](.github/workflows/gradle-wrapper-validation.yml) - Will check that the gradle wrapper has a valid checksum
-- [Pre Merge Checks](.github/workflows/pre-merge.yaml) - Will run the `preMerge` tasks as well as trying to run the Gradle plugin.
-- [Publish to Plugin Portal](.github/workflows/pre-merge.yaml) - Will run the `publishPlugin` task when pushing a new tag.
-
-## Contributing 🤝
-
-Feel free to open a issue or submit a pull request for any bugs/improvements.
+## Common issues
+* Python common build problems: https://github.com/pyenv/pyenv/wiki/Common-build-problems
+* in case of uninstalling venv from Windows, it can be necessary to run uninstall exec (downloaded in `build` directory) to fully uninstall python, 
+deleting python venv dir could not be sufficient
+* in case of any problems with installation on Windows try reinstalling (uninstall by msi installer in `build` dir and then execute once again `build_envs` task)
+* installing python on Linux can require installation of additional packages, 
+for example openssl, so before virtual envs installation run: `sudo apt-get install openssl` 
