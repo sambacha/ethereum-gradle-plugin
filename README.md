@@ -1,4 +1,29 @@
-# Python Gradle Plugin
+## Ethereum  Gradle Plugin
+
+### Solidity
+
+Once the plugin is applied, you can configure it with the following options (default values are displayed below):
+
+```kotlin
+solidity {
+    attachToBuild.set(true)
+    command.set("docker run --rm")
+    solidityImage.set("ethereum/solc:stable")
+    evmVersion.set(EVMVersion.ISTANBUL)
+    outputComponents.set(listOf(OutputComponent.BIN, OutputComponent.ABI))
+    overwrite.set(true)
+    optimize.set(true)
+    optimize.runs(0)
+    prettyJson.set(false)
+    ignoreMissing.set(false)
+    allowPaths.set(emptyList())
+}
+```
+A solidity source set will be available like a regular java or kotlin, so you can add your source code like usual.
+
+
+### Python Enviornment
+
 This Gradle Plugin uses [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 to run executables (`python`, `pip`, `conda` etc.) from virtual env.  
 
